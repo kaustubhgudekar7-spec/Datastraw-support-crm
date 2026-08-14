@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>New Ticket — Support CRM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="/static/app.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+  <header class="bg-white border-b border-slate-200">
+    <div class="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold text-slate-900">New Ticket</h1>
+      <a href="/" class="text-sm text-slate-500 hover:text-slate-800">&larr; Back to tickets</a>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <form id="ticketForm" class="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+      <div>
+        <label class="block text-sm font-medium mb-1">Customer name</label>
+        <input name="customer_name" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Customer email</label>
+        <input type="email" name="customer_email" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Subject</label>
+        <input name="subject" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Description</label>
+        <textarea name="description" required rows="5" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Priority</label>
+        <select name="priority" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
+          <option value="Low">Low</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="High">High</option>
+          <option value="Urgent">Urgent</option>
+        </select>
+      </div>
+
+      <div id="formError" class="hidden text-sm text-red-600"></div>
+
+      <button type="submit" class="w-full bg-slate-900 text-white font-medium py-2.5 rounded-lg hover:bg-slate-700 transition">
+        Create Ticket
+      </button>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById("ticketForm");
+    const formError = document.getElementById("formError");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formError.classList.add("hidden");
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      try {
+        const result = await apiPost(API_BASE, data);
+        window.location.href = `/ticket?id=${result.ticket_id}`;
+      } catch (err) {
+        formError.textContent = "Could not create ticket: " + err.message;
+        formError.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

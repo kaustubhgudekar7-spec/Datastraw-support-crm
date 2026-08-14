@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.env
+*.db
+support_crm.db
+.DS_Store
+.idea/
+.vscode/
