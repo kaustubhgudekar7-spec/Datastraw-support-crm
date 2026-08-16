@@ -88,7 +88,8 @@
     </div>
   </main>
 
-  <script>
+<script>
+    requireAuth();
     const ticketId = getQueryParam("id");
     const loadingState = document.getElementById("loadingState");
     const errorState = document.getElementById("errorState");

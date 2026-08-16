@@ -76,6 +76,16 @@ def update_ticket(db: Session, ticket: models.Ticket, data: schemas.TicketUpdate
     db.refresh(ticket)
     return ticket
 
+def get_agent_by_email(db: Session, email: str) -> Optional[models.Agent]:
+    return db.query(models.Agent).filter(models.Agent.email == email).first()
+
+
+def create_agent(db: Session, name: str, email: str, hashed_password: str) -> models.Agent:
+    agent = models.Agent(name=name, email=email, hashed_password=hashed_password)
+    db.add(agent)
+    db.commit()
+    db.refresh(agent)
+    return agent
 
 def is_breached(ticket: models.Ticket) -> bool:
     if ticket.status == "Closed" or not ticket.sla_deadline:

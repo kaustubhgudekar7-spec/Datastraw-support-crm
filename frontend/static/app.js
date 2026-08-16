@@ -1,37 +1,77 @@
 const API_BASE = "/api/tickets";
+const TOKEN_KEY = "datastraw_crm_token";
+const AGENT_KEY = "datastraw_crm_agent";
 
-async function apiGet(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-  return res.json();
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
 }
 
-async function apiPost(url, body) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+function setSession(token, agent) {
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(AGENT_KEY, JSON.stringify(agent));
+}
+
+function clearSession() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(AGENT_KEY);
+}
+
+function getCurrentAgent() {
+  const raw = localStorage.getItem(AGENT_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+
+function logout() {
+  clearSession();
+  window.location.href = "/login";
+}
+
+function requireAuth() {
+  if (!getToken()) {
+    window.location.href = "/login";
+  }
+}
+
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function handleAuthResponse(res) {
+  if (res.status === 401) {
+    clearSession();
+    window.location.href = "/login";
+    throw new Error("Not authenticated");
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail ? JSON.stringify(err.detail) : `Request failed: ${res.status}`);
   }
   return res.json();
+}
+
+async function apiGet(url) {
+  const res = await fetch(url, { headers: { ...authHeaders() } });
+  return handleAuthResponse(res);
+}
+
+async function apiPost(url, body, skipAuth = false) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(skipAuth ? {} : authHeaders()) },
+    body: JSON.stringify(body),
+  });
+  return handleAuthResponse(res);
 }
 
 async function apiPut(url, body) {
   const res = await fetch(url, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail ? JSON.stringify(err.detail) : `Request failed: ${res.status}`);
-  }
-  return res.json();
+  return handleAuthResponse(res);
 }
-
 function statusBadgeClass(status) {
   switch (status) {
     case "Open":

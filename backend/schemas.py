@@ -5,6 +5,38 @@ from pydantic import BaseModel, EmailStr, field_validator
 VALID_STATUSES = {"Open", "In Progress", "Closed"}
 VALID_PRIORITIES = {"Low", "Medium", "High", "Urgent"}
 
+class AgentSignup(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def check_password_length(cls, v):
+        if len(v) < 6:
+            raise ValueError("password must be at least 6 characters")
+        return v
+
+
+class AgentLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class AgentOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+    class Config:
+        from_attributes = True
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    agent: AgentOut
+
 
 class TicketCreate(BaseModel):
     customer_name: str

@@ -14,9 +14,15 @@
         <h1 class="text-xl font-semibold text-slate-900">Support CRM</h1>
         <p class="text-sm text-slate-500">Datastraw customer support tickets</p>
       </div>
-      <a href="/create" class="bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-slate-700 transition">
-        + New Ticket
-      </a>
+<div class="flex items-center gap-3">
+        <span id="agentName" class="text-sm text-slate-500 hidden sm:inline"></span>
+        <a href="/create" class="bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-slate-700 transition">
+          + New Ticket
+        </a>
+        <button onclick="logout()" class="text-sm text-slate-500 hover:text-slate-800 border border-slate-300 px-3 py-2 rounded-lg transition">
+          Log out
+        </button>
+      </div>
     </div>
   </header>
 
@@ -57,9 +63,12 @@
     </div>
   </main>
 
-  <script>
-    const tbody = document.getElementById("ticketTableBody");
-    const emptyState = document.getElementById("emptyState");
+<script>
+    requireAuth();
+    const agent = getCurrentAgent();
+    if (agent) document.getElementById("agentName").textContent = `${agent.name}`;
+
+    const tbody = document.getElementById("ticketTableBody");const emptyState = document.getElementById("emptyState");
     const searchInput = document.getElementById("searchInput");
     const statusFilter = document.getElementById("statusFilter");
 

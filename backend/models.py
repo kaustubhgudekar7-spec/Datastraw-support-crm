@@ -28,6 +28,14 @@ class Ticket(Base):
 
     notes = relationship("Note", back_populates="ticket", cascade="all, delete-orphan")
 
+class Agent(Base):
+    __tablename__ = "agents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 class Note(Base):
     __tablename__ = "notes"
