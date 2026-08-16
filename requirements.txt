@@ -4,3 +4,4 @@ sqlalchemy==2.0.35
 greenlet
 pydantic[email]==2.9.2
 python-multipart==0.0.9
+pyjwt==2.9.0
